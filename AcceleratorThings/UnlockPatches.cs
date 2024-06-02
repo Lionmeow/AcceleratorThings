@@ -31,13 +31,13 @@ namespace AcceleratorThings
             if (model.unlocked.Contains(SRLookup.Get<GadgetDefinition>("Accelerator").PediaEntry))
             {
                 GadgetDirector dir = __instance.GadgetDirector;
-                if (!dir.HasBlueprint(EntryPoint.triacceleratorDef))
+                if (!model.unlocked.Contains(EntryPoint.triacceleratorDef.PediaEntry))
                     shouldShowPopupTri = true;
-                if (!dir.HasBlueprint(EntryPoint.upcceleratorDef))
+                if (!model.unlocked.Contains(EntryPoint.upcceleratorDef.PediaEntry))
                     shouldShowPopupUp = true;
-                if (!dir.HasBlueprint(EntryPoint.vacceleratorDef))
+                if (!model.unlocked.Contains(EntryPoint.vacceleratorDef.PediaEntry))
                     shouldShowPopupVac = true;
-                if (!dir.HasBlueprint(EntryPoint.accelefilterDef))
+                if (!model.unlocked.Contains(EntryPoint.accelefilterDef.PediaEntry))
                     shouldShowPopupFilter = true;
             }
         }
@@ -65,30 +65,30 @@ namespace AcceleratorThings
 
             if (PediaSetModelPotentialUnlockPatch.shouldShowPopupVac)
             {
-                SceneContext.Instance.GadgetDirector._model.blueprints.Add(EntryPoint.triacceleratorDef);
                 SceneContext.Instance.PediaDirector.Unlock(EntryPoint.triacceleratorDef._pediaLink, false);
-                SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.vacceleratorDef._pediaLink);
+                if (SceneContext.Instance.GadgetDirector._model.blueprints.AddIfNotPresent(EntryPoint.triacceleratorDef))
+                    SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.vacceleratorDef._pediaLink);
                 PediaSetModelPotentialUnlockPatch.shouldShowPopupVac = false;
             }
             if (PediaSetModelPotentialUnlockPatch.shouldShowPopupTri)
             {
-                SceneContext.Instance.GadgetDirector._model.blueprints.Add(EntryPoint.upcceleratorDef);
                 SceneContext.Instance.PediaDirector.Unlock(EntryPoint.upcceleratorDef._pediaLink, false);
-                SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.triacceleratorDef._pediaLink);
+                if (SceneContext.Instance.GadgetDirector._model.blueprints.AddIfNotPresent(EntryPoint.upcceleratorDef))
+                    SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.triacceleratorDef._pediaLink);
                 PediaSetModelPotentialUnlockPatch.shouldShowPopupTri = false;
             }
             if (PediaSetModelPotentialUnlockPatch.shouldShowPopupUp)
             {
-                SceneContext.Instance.GadgetDirector._model.blueprints.Add(EntryPoint.vacceleratorDef);
                 SceneContext.Instance.PediaDirector.Unlock(EntryPoint.vacceleratorDef._pediaLink, false);
-                SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.upcceleratorDef._pediaLink);
+                if (SceneContext.Instance.GadgetDirector._model.blueprints.AddIfNotPresent(EntryPoint.vacceleratorDef))
+                    SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.upcceleratorDef._pediaLink);
                 PediaSetModelPotentialUnlockPatch.shouldShowPopupUp = false;
             }
             if (PediaSetModelPotentialUnlockPatch.shouldShowPopupFilter)
             {
-                SceneContext.Instance.GadgetDirector._model.blueprints.Add(EntryPoint.accelefilterDef);
                 SceneContext.Instance.PediaDirector.Unlock(EntryPoint.accelefilterDef._pediaLink, false);
-                SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.accelefilterDef._pediaLink);
+                if (SceneContext.Instance.GadgetDirector._model.blueprints.AddIfNotPresent(EntryPoint.accelefilterDef))
+                    SceneContext.Instance.PediaDirector.ShowPopupIfUnlocked(EntryPoint.accelefilterDef._pediaLink);
                 PediaSetModelPotentialUnlockPatch.shouldShowPopupFilter = false;
             }
         }

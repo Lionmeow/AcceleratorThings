@@ -8,6 +8,7 @@ using Il2CppMonomiPark.SlimeRancher.Player.PlayerItems;
 using Il2CppMonomiPark.SlimeRancher.Regions;
 using Il2CppMonomiPark.SlimeRancher.Script.Util;
 using Il2CppMonomiPark.SlimeRancher.UI.Fabricator;
+using Il2CppMonomiPark.SlimeRancher.UI.Pedia;
 using Il2CppMonomiPark.SlimeRancher.World;
 using MelonLoader;
 using UnityEngine;
@@ -43,17 +44,6 @@ namespace AcceleratorThings
             return data;
         }
 
-        [HarmonyPatch(typeof(AutoSaveDirector), "ResetLookupTables")]
-        [HarmonyPrefix]
-        public static void OnAutoSaveDirector(AutoSaveDirector __instance)
-        {
-            /*if (autosaveinitialized)
-                return;
-
-            autosaveinitialized = true;*/
-            Debug.Log("ResetLookupTables");
-        }
-
         [HarmonyPatch(typeof(LookupDirector), "Awake")]
         [HarmonyPrefix]
         public static void OnLookupDirector(LookupDirector __instance)
@@ -83,18 +73,6 @@ namespace AcceleratorThings
             accelefilterDef._pediaPersistenceSuffix = "accelefilter";
             accelefilterDef.Type = GadgetDefinition.Types.ITEM_DISPLAY;
             SRLookup.Get<IdentifiableTypeGroup>("GadgetUtilitiesGroup").MemberTypes.Add(accelefilterDef);
-        }
-
-        [HarmonyPatch(typeof(GameContext), "Start")]
-        [HarmonyPrefix]
-        public static void OnGameContext(GameContext __instance)
-        {
-            if (gcinitialized)
-                return;
-
-            gcinitialized = true;
-
-            UnityEngine.Object[] objs = bundle.LoadAllAssets();
 
             LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.name.vaccelerator", "Vaccelerator");
             LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.desc.vaccelerator", "A ring that not only applies a speed boost to any object that moves through it, but also projects a vacuum stream for twice as much bending of reality.");
@@ -153,6 +131,18 @@ namespace AcceleratorThings
             filterPedia._description = accelefilterDef._localizedDescription;
             blueprintCategory._items = blueprintCategory._items.AddItem(filterPedia).ToArray();
             accelefilterDef._pediaLink = filterPedia;
+        }
+
+        [HarmonyPatch(typeof(GameContext), "Start")]
+        [HarmonyPrefix]
+        public static void OnGameContext(GameContext __instance)
+        {
+            if (gcinitialized)
+                return;
+
+            gcinitialized = true;
+
+            UnityEngine.Object[] objs = bundle.LoadAllAssets();
 
             Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> vacCosts =
                 new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
@@ -433,9 +423,5 @@ namespace AcceleratorThings
             if (currVacuum)
                 currVacuum.ForceJoint(vacuumable);
         }
-
-        [HarmonyPatch(typeof(FabricatorCategoryTitle), "SetCategory")]
-        [HarmonyPrefix]
-        public static void OnTitleSetCategory() => Debug.Log("category category");
     }
 }
