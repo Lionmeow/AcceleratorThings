@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace AcceleratorThings
 {
-    [HarmonyPatch(typeof(SavedGame), "Push", new[] { typeof(GameModel) })]
+    //[HarmonyPatch(typeof(SavedGame), "Push", new[] { typeof(GameModel) })]
     internal static class PediaSetModelPotentialUnlockPatch
     {
         public static bool shouldShowPopupVac = false;
@@ -43,7 +43,7 @@ namespace AcceleratorThings
         }
     }
 
-    [HarmonyPatch(typeof(LoadingScreenView), "Awake")]
+    //[HarmonyPatch(typeof(LoadingScreenView), "Awake")]
     internal static class PopupDirectorPatch
     {
         public static void Postfix(LoadingScreenView __instance)

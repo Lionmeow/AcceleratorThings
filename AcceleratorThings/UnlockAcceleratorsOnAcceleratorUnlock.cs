@@ -3,7 +3,7 @@ using Il2Cpp;
 
 namespace AcceleratorThings
 {
-    [HarmonyPatch(typeof(GadgetDirector), "AddBlueprint")]
+    //[HarmonyPatch(typeof(GadgetDirector), "AddBlueprint")]
     internal static class UnlockAcceleratorsOnAcceleratorUnlock
     {
         public static void Postfix(GadgetDirector __instance, GadgetDefinition blueprint)
