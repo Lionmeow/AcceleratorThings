@@ -55,6 +55,7 @@ namespace AcceleratorThings
         {
             if (location == null)
                 return true;
+
             if (!location.PrimaryKey.StartsWith("MODDED_AcceleratorThings"))
                 return true;
 
@@ -83,5 +84,4 @@ namespace AcceleratorThings
             return false;
         }
     }
-
 }

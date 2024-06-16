@@ -5,6 +5,7 @@ using Il2CppAssets.Script.Util.Extensions;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppMonomiPark.SlimeRancher;
+using Il2CppMonomiPark.SlimeRancher.Event;
 using Il2CppMonomiPark.SlimeRancher.Event.Query;
 using Il2CppMonomiPark.SlimeRancher.Pedia;
 using Il2CppMonomiPark.SlimeRancher.Player.PlayerItems;
@@ -21,7 +22,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
-using static Il2Cpp.SECTR_LightmapRef;
+using UnityEngine.InputSystem;
+using UnityEngine.ResourceManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 [assembly: MelonInfo(typeof(EntryPoint), "Accelerator Things", "1.0", "Lionmeow")]
 
@@ -40,6 +45,7 @@ namespace AcceleratorThings
 
         public static ShopCategorySourceRuleSet acceleratorsRuleset;
         public static ShopFixedItemsTable acceleratorsTable;
+        public static ShopCategorySourceLink acceleratorsLink;
 
         public static GenericVacuum vac;
         public static GameObject destroyOnVacFX;
@@ -172,13 +178,14 @@ namespace AcceleratorThings
             });
             Addressables.AddResourceLocator(new ModdedResourceLocator().Cast<IResourceLocator>());
             AssetReferenceT<IdentifiableType> assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Vaccelerator");
-            //MelonCoroutines.Start(LoadAsset(assetReference));
 
             acceleratorsRuleset = ScriptableObject.CreateInstance<ShopCategorySourceRuleSet>();
             acceleratorsRuleset.hideFlags = HideFlags.HideAndDontSave;
             acceleratorsRuleset.name = "RangeExchange_AcceleratorThingsRuleSet";
             acceleratorsRuleset._randomItemRestockFrequency = ShopRandomRestockFrequency.NEVER_RESET;
             acceleratorsRuleset._sortIndex = 4;
+            acceleratorsRuleset._assetGuid = "MODDED_AcceleratorThings/RuleSet";
+            acceleratorsRuleset._categoryLink = new AssetReferenceT<ShopItemCategoryDescription>("b99fdf9ac7d2f2d4c842bd747045ea73");
 
             acceleratorsTable = ScriptableObject.CreateInstance<ShopFixedItemsTable>();
             acceleratorsTable.hideFlags = HideFlags.HideAndDontSave;
@@ -207,6 +214,28 @@ namespace AcceleratorThings
                     }
                 }
             };
+
+            CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/RuleSet"] = acceleratorsRuleset;
+
+            acceleratorsLink = ScriptableObject.CreateInstance<ShopCategorySourceLink>();
+            acceleratorsLink.hideFlags = HideFlags.HideAndDontSave;
+            acceleratorsLink.name = "RangeExchange_AcceleratorThingsSourceLink";
+            acceleratorsLink._linkedSource = acceleratorsTable;
+            acceleratorsLink._owningRuleSet = new AssetReferenceT<ShopCategorySourceRuleSet>("MODDED_AcceleratorThings/RuleSet");
+            acceleratorsLink._sortIndex = 4;
+
+            CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/Link"] = acceleratorsLink;
+
+            Il2CppSystem.Collections.Generic.List<IGameQueryComponent> queryComponents = new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>();
+            queryComponents.Add(GadgetEventQueryComponent.CreateQueryComponent(new AssetReferenceT<GadgetEventProducer>("fb4d5e5097d315d4cbc6e8f6d7fd7a3a")
+                .LoadAsset<GadgetEventProducer>().WaitForCompletion(), SRLookup.Get<GadgetDefinition>("Accelerator"), 1).Cast<IGameQueryComponent>());
+            acceleratorsRuleset._allItemsAvailableCondition = CompositeQueryComponent.CreateCompositeQueryComponent(CompositeQueryComponent.BoolOperation.ALL_OF,
+            queryComponents.Cast<Il2CppSystem.Collections.Generic.IEnumerable<IGameQueryComponent>>());
+
+            /*ShopCategorySourceLink runtime = new AssetReference("7614c9994bf389e46ab07bff05577b80").LoadAsset<ShopCategorySourceLink>().WaitForCompletion();
+            runtime._linkedSource = acceleratorsTable;
+            runtime._owningRuleSet = new AssetReferenceT<ShopCategorySourceRuleSet>("MODDED_AcceleratorThings/RuleSet");*/
+            //UnityEngine.Debug.Log(runtime.AssetGuid);
 
             Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> vacCosts =
                 new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
@@ -462,6 +491,26 @@ namespace AcceleratorThings
             UnityEngine.Object.Destroy(filtermodel.transform.FindChild("model_acceleratorDecals").gameObject);
         }
 
+        [HarmonyPatch(typeof(AddressablesImpl), "LoadResourceLocationsAsync", new [] { typeof(Il2CppSystem.Object), typeof(Il2CppSystem.Type) })]
+        [HarmonyPostfix]
+        public static void LoadResourceLocations(Il2CppSystem.Object key, Il2CppSystem.Type type, 
+            ref AsyncOperationHandle<Il2CppSystem.Collections.Generic.IList<IResourceLocation>> __result)
+        {
+            if (key != null && key.ToString().Contains("Group_ShopCategory"))
+            {
+                Il2CppSystem.Collections.Generic.List<IResourceLocation> locations =
+                    new Il2CppSystem.Collections.Generic.List<IResourceLocation>(__result.Result.Cast<Il2CppSystem.Collections.Generic.IEnumerable<IResourceLocation>>());
+
+                locations.Add(new ResourceLocationBase("MODDED_AcceleratorThings/Link", "MODDED_AcceleratorThings/Link",
+                    typeof(BundledAssetProvider).FullName, Il2CppType.Of<ShopCategorySourceLink>()).Cast<IResourceLocation>());
+                locations.Add(new ResourceLocationBase("MODDED_AcceleratorThings/RuleSet", "MODDED_AcceleratorThings/RuleSet",
+                    typeof(BundledAssetProvider).FullName, Il2CppType.Of<ShopCategorySourceRuleSet>()).Cast<IResourceLocation>());
+
+                __result = Addressables.ResourceManager.CreateCompletedOperationInternal(locations.Cast<Il2CppSystem.Collections.Generic.IList<IResourceLocation>>(),
+                    true, null, false);
+            }
+        }
+
         [HarmonyPatch(typeof(VacuumItem), "Awake")]
         [HarmonyPrefix]
         public static void VacuumItemAwakePrefix(VacuumItem __instance)
@@ -488,33 +537,29 @@ namespace AcceleratorThings
                 currVacuum.ForceJoint(vacuumable);
         }
 
-        [HarmonyPatch(typeof(ShopRuntime), MethodType.Constructor)]
+        [HarmonyPatch(typeof(ShopDirector), "Awake")]
         [HarmonyPostfix]
-        public static void ShopDirectorAddCustomPatch(ShopRuntime __instance)
+        public static void ShopDirectorAddCustomPatch(ShopDirector __instance)
         {
-            ShopCategoryRuntime refCat = __instance._categories.Find((Il2CppSystem.Predicate<ShopCategoryRuntime>)(y => y.AnalyticsName == "RangeExchange"));
-
-            Il2CppSystem.Collections.Generic.List<IGameQueryComponent> queryComponents = new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>();
-            queryComponents.Add(GadgetEventQueryComponent.CreateQueryComponent(SceneContext.Instance.GadgetDirector._blueprintObtainedEvent,
-                SRLookup.Get<GadgetDefinition>("Accelerator"), 1).Cast<IGameQueryComponent>());
-            acceleratorsRuleset._allItemsAvailableCondition = CompositeQueryComponent.CreateCompositeQueryComponent(CompositeQueryComponent.BoolOperation.ALL_OF,
-            queryComponents.Cast<Il2CppSystem.Collections.Generic.IEnumerable<IGameQueryComponent>>());
-            //acceleratorsRuleset._allItemsAvailableCondition = new CompositeQueryComponent();
-            //acceleratorsRuleset.AllItemsAvailableCondition._children = new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>();
-            //acceleratorsRuleset.AllItemsAvailableCondition._operation = CompositeQueryComponent.BoolOperation.ALL_OF;
-
-            acceleratorsRuleset._categoryLink = refCat.CategoryLink;
-
-            ShopRuntimeRuleSetGroup runtimeGroup = new ShopRuntimeRuleSetGroup(acceleratorsRuleset);
-            runtimeGroup._evaluatingItems = new Il2CppSystem.Collections.Generic.List<ShopRuntimeRuleSetGroup.EvaluatingItemEntry>();
-            runtimeGroup._dataSources = new Il2CppSystem.Collections.Generic.List<ShopRuntimeRuleSetGroup.DataSourceEntry>();
-            runtimeGroup._dataSources.Add(new ShopRuntimeRuleSetGroup.DataSourceEntry()
+            
+            __instance._runtime.add_CategoriesLoaded((Il2CppSystem.Action<ShopRuntime>)(x =>
             {
-                DataSource = acceleratorsTable,
-                SortIndex = 0
-            });
+                //ShopCategoryRuntime refCat = x._categories.Find((Il2CppSystem.Predicate<ShopCategoryRuntime>)(y => y.AnalyticsName == "RangeExchange"));
 
-            refCat._providers.Add(runtimeGroup.Cast<IShopCategoryProvider>());
+                //acceleratorsRuleset._allItemsAvailableCondition = new CompositeQueryComponent();
+                //acceleratorsRuleset.AllItemsAvailableCondition._children = new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>();
+                //acceleratorsRuleset.AllItemsAvailableCondition._operation = CompositeQueryComponent.BoolOperation.ALL_OF;
+
+                //acceleratorsRuleset._categoryLink = refCat.CategoryLink;
+
+                /*ShopRuntimeRuleSetGroup runtimeGroup = new ShopRuntimeRuleSetGroup(acceleratorsRuleset);
+                runtimeGroup._evaluatingItems = new Il2CppSystem.Collections.Generic.List<ShopRuntimeRuleSetGroup.EvaluatingItemEntry>();
+                runtimeGroup.AddSource(acceleratorsLink, 4);
+
+                refCat._providers.Add(runtimeGroup.Cast<IShopCategoryProvider>());
+                refCat.ClearCachedItems();
+                refCat.CacheDataOnLoadComplete();*/
+            }));
         }
     }
 }
