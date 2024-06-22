@@ -1,4 +1,4 @@
-Accelerator Things adds four new kinds of accelerators:
+Accelerator Things adds five new kinds of accelerators:
 
 - The Triaccelerator splits any objects going through the accelerator path into two separate paths
 - The Upccelerator fires things up at an incline
