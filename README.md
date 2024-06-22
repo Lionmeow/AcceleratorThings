@@ -9,3 +9,5 @@ Accelerator Things adds five new kinds of accelerators:
 All accelerator variants are able to be purchased from the ProntoMart as soon as the accelerator is unlocked.
 
 This mod is built via [MelonLoader](https://github.com/LavaGang/MelonLoader/) and thus requires it to work
+
+Credit to KomiksPL for helping immensely with the Addressables and shop systems.
