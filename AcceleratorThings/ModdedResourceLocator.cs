@@ -1,15 +1,4 @@
-﻿using Il2Cpp;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Attributes;
-using Il2CppInterop.Runtime.Injection;
-using MelonLoader;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.AddressableAssets.ResourceLocators;
+﻿using Il2CppInterop.Runtime.Injection;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 

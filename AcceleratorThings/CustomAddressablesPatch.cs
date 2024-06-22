@@ -1,49 +1,13 @@
 ﻿using HarmonyLib;
-using Il2Cpp;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace AcceleratorThings
 {
-    /*[HarmonyPatch]
-    public static class CustomAddressablesImplPatch
-    {
-        public static MethodBase TargetMethod() => typeof(AddressablesImpl).GetMethods().First(x => x.GetParameters().Length == 1 &&
-            x.GetParameters()[0].ParameterType == typeof(object) && x.GetGenericArguments().Length == 1);
-
-        [HarmonyPrefix]
-        public static bool LoadAssetAsyncPrefix(AddressablesImpl __instance, object key, ref object __result)
-        {
-            if (key == null)
-                return true;
-            if (key.GetType() != typeof(string))
-                return true;
-            if (!CustomAddressablesPatch.customAddressablePaths.ContainsKey((string)key))
-                return true;
-
-            ResourceLocatorInfo inf = new ResourceLocatorInfo();
-            inf.Locator.Locate()
-
-            __result = __instance.ResourceManager.ProvideResource(
-                new ResourceLocationBase((string)key, (string)key, typeof(AssetBundleProvider).FullName, Il2CppType.Of<UnityEngine.Object>()).Cast<IResourceLocation>());
-            return false;
-        }
-    }*/
-
     [HarmonyPatch]
     public static class CustomAddressablesPatch
     {
@@ -79,9 +43,22 @@ namespace AcceleratorThings
 
             var asyncOperationHandle = new AsyncOperationHandle(((Il2CppObjectBase)AccessTools.PropertyGetter(completedOperationInternal.GetType(), "InternalOp")
                 .Invoke(completedOperationInternal, null)).Cast<IAsyncOperation>(), (int)AccessTools.PropertyGetter(completedOperationInternal.GetType(), 
-                "m_Version").Invoke(completedOperationInternal, null));
+                "m_Version").Invoke(completedOperationInternal, null)); // this is the worst thing ever actually
             __result = asyncOperationHandle;
             return false;
+        }
+
+        // Game has failsafes in order to prevent loading invalid assets, bypass them
+        [HarmonyPatch(typeof(AssetReference), "RuntimeKeyIsValid")]
+        [HarmonyPrefix]
+        public static bool LabelModdedKeysAsValid(AssetReference __instance, ref bool __result)
+        {
+            if (customAddressablePaths.ContainsKey(__instance.RuntimeKey.ToString()))
+            {
+                __result = true;
+                return false;
+            }
+            return true;
         }
     }
 }
