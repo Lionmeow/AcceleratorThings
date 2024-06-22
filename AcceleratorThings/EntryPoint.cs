@@ -18,6 +18,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.Playables;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
@@ -36,6 +37,7 @@ namespace AcceleratorThings
         public static GadgetDefinition triacceleratorDef;
         public static GadgetDefinition upcceleratorDef;
         public static GadgetDefinition accelefilterDef;
+        public static GadgetDefinition bigcceleratorDef;
 
         public static ShopCategorySourceRuleSet acceleratorsRuleset;
         public static ShopFixedItemsTable acceleratorsTable;
@@ -87,6 +89,11 @@ namespace AcceleratorThings
             accelefilterDef.Type = GadgetDefinition.Types.ITEM_DISPLAY;
             SRLookup.Get<IdentifiableTypeGroup>("GadgetUtilitiesGroup").MemberTypes.Add(accelefilterDef);
 
+            bigcceleratorDef = SRLookup.GetCopy<GadgetDefinition>("Accelerator");
+            bigcceleratorDef.name = "Bigccelerator";
+            bigcceleratorDef._pediaPersistenceSuffix = "bigccelerator";
+            SRLookup.Get<IdentifiableTypeGroup>("GadgetUtilitiesGroup").MemberTypes.Add(bigcceleratorDef);
+
             LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.name.vaccelerator", "Vaccelerator");
             LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.desc.vaccelerator", "A ring that not only applies a speed boost to any object that moves through it, but also projects a vacuum stream for twice as much bending of reality.");
             vacceleratorDef.localizedName = LocalizationUtil.CreateByKey("Pedia", "m.gadget.name.vaccelerator", false);
@@ -106,6 +113,11 @@ namespace AcceleratorThings
             LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.desc.accelefilter", "A carefully-calibrated ring that will boost desired items separately from everything else. Useful if you want to make a complex storage system, or if you're just really into carrots.");
             accelefilterDef.localizedName = LocalizationUtil.CreateByKey("Pedia", "m.gadget.name.accelefilter", false);
             accelefilterDef._localizedDescription = LocalizationUtil.CreateByKey("Pedia", "m.gadget.desc.accelefilter", false);
+
+            LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.name.bigccelerator", "Bigccelerator");
+            LocalizationUtil.GetTable("Pedia").AddEntry("m.gadget.desc.bigccelerator", "This oversized ring will give ANYTHING a boost of high speed. Even yourself. Side effects may include: getting launched into space.");
+            bigcceleratorDef.localizedName = LocalizationUtil.CreateByKey("Pedia", "m.gadget.name.bigccelerator", false);
+            bigcceleratorDef._localizedDescription = LocalizationUtil.CreateByKey("Pedia", "m.gadget.desc.bigccelerator", false);
 
             PediaCategory blueprintCategory = SRLookup.Get<PediaCategory>("Blueprints");
 
@@ -144,13 +156,15 @@ namespace AcceleratorThings
             filterPedia._description = accelefilterDef._localizedDescription;
             blueprintCategory._items = blueprintCategory._items.AddItem(filterPedia).ToArray();
             accelefilterDef._pediaLink = filterPedia;
-        }
 
-        public static IEnumerator LoadAsset(AssetReferenceT<IdentifiableType> assetReference)
-        {
-            var asyncOperationHandle = assetReference.LoadAsset();
-            yield return asyncOperationHandle;
-            MelonLogger.Msg(asyncOperationHandle.Result.ToString());
+            IdentifiablePediaEntry bigPedia = ScriptableObject.CreateInstance<IdentifiablePediaEntry>();
+            bigPedia.hideFlags = HideFlags.HideAndDontSave;
+            bigPedia.name = "Bigccelerator";
+            bigPedia._identifiableType = bigcceleratorDef;
+            bigPedia._title = bigcceleratorDef.localizedName;
+            bigPedia._description = bigcceleratorDef._localizedDescription;
+            blueprintCategory._items = blueprintCategory._items.AddItem(bigPedia).ToArray();
+            bigcceleratorDef._pediaLink = bigPedia;
         }
 
         [HarmonyPatch(typeof(GameContext), "Start")]
@@ -168,6 +182,7 @@ namespace AcceleratorThings
             CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/Triaccelerator"] = triacceleratorDef;
             CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/Upccelerator"] = upcceleratorDef;
             CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/Accelefilter"] = accelefilterDef;
+            CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/Bigccelerator"] = bigcceleratorDef;
 
             ClassInjector.RegisterTypeInIl2Cpp<ModdedResourceLocator>(new RegisterTypeOptions()
             {
@@ -277,6 +292,26 @@ namespace AcceleratorThings
                         }
                     },
                     AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                },
+                new ShopFixedItemsTable.ItemEntry()
+                {
+                    ItemCost = new ShopItemCost()
+                    {
+                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            newbuckCost = 500
+                        },
+                        UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
+                        ShopItem = new ShopItemAssetReference()
+                        {
+                            _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Bigccelerator"),
+                            _filterFlags = ShopItemFilterFlags.GADGET,
+                            _identifiableReferenceId = bigcceleratorDef.ReferenceId
+                        }
+                    },
+                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
                 }
             };
             acceleratorsTable.OnAfterDeserialize();
@@ -343,10 +378,23 @@ namespace AcceleratorThings
                 identCosts = filterCosts
             };
 
+            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> bigCosts =
+                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
+            bigCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            bigCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 4, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+
+            bigcceleratorDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            {
+                componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                newbuckCost = 100,
+                identCosts = bigCosts
+            };
+
             vacceleratorDef.icon = objs.First(x => x.name == "iconGadgetVaccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
             triacceleratorDef.icon = objs.First(x => x.name == "iconGadgetTriaccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
             accelefilterDef.icon = objs.First(x => x.name == "iconGadgetAccelefilter" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
             upcceleratorDef.icon = objs.First(x => x.name == "iconGadgetUpccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
+            bigcceleratorDef.icon = objs.First(x => x.name == "iconGadgetBigccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
 
             GameObject vaccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             vaccelerator.transform.localPosition = Vector3.zero;
@@ -543,6 +591,44 @@ namespace AcceleratorThings
             UnityEngine.Object.Destroy(filtermodel.GetComponent<MeshRenderer>());
             UnityEngine.Object.Destroy(decorItemDisplay.GetComponentInChildren<CapsuleCollider>());
             UnityEngine.Object.Destroy(filtermodel.transform.FindChild("model_acceleratorDecals").gameObject);
+
+            GameObject bigccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
+            bigccelerator.transform.localPosition = Vector3.zero;
+            bigccelerator.GetComponent<Gadget>().identType = bigcceleratorDef;
+            bigcceleratorDef.prefab = bigccelerator;
+
+            GameObject bigmodel = bigccelerator.transform.GetChild(0).gameObject;
+
+            GameObject bigccelCustomModel = UnityEngine.Object.Instantiate(objs.First(x => x.name == "bigccelerator").Cast<GameObject>());
+            bigccelCustomModel.transform.SetParent(bigmodel.transform);
+            bigccelCustomModel.transform.localPosition = Vector3.zero;
+            bigccelCustomModel.transform.localEulerAngles = Vector3.zero;
+            foreach (MeshRenderer rend in bigccelCustomModel.GetComponentsInChildren<MeshRenderer>())
+            {
+                rend.materials = new Material[]
+                {
+                    m,
+                    m
+                };
+            }
+
+            Transform bigccelTrigger = bigmodel.transform.GetChild(2);
+            bigccelTrigger.localPosition += new Vector3(0, 0.5f, 0);
+            bigccelTrigger.localScale = new Vector3(2, 2, 2);
+            Accelerator bigccelComponent = bigccelTrigger.GetComponent<Accelerator>();
+            bigccelComponent._acceleratableTypeGroup = SRLookup.Get<IdentifiableTypeGroup>("IdentifiableTypeGroups");
+            bigccelComponent._accelerationForce = new Vector3(0, 0, 50);
+            PlayerAccelerator bigccelPlayer = bigccelTrigger.gameObject.AddComponent<PlayerAccelerator>();
+            PlayerAccelerator.launchedCue = bigccelComponent._itemAcceleratedCue;
+
+            Transform bigfx = bigccelerator.transform.GetChild(1);
+            bigfx.localPosition += new Vector3(0, 0.5f, 0);
+            bigfx.localScale = new Vector3(2, 2, 2);
+
+            bigmodel.GetComponent<MeshCollider>().sharedMesh = objs.First(x => x.name == "bigccelerator_COL").Cast<GameObject>().GetComponentInChildren<MeshFilter>().mesh;
+            UnityEngine.Object.Destroy(bigmodel.GetComponent<MeshFilter>());
+            UnityEngine.Object.Destroy(bigmodel.GetComponent<MeshRenderer>());
+            UnityEngine.Object.Destroy(bigmodel.transform.FindChild("model_acceleratorDecals").gameObject);
         }
 
         [HarmonyPatch(typeof(AddressablesImpl), "LoadResourceLocationsAsync", new [] { typeof(Il2CppSystem.Object), typeof(Il2CppSystem.Type) })]
