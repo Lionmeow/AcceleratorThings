@@ -10,4 +10,4 @@ All accelerator variants are able to be purchased from the ProntoMart as soon as
 
 This mod is built via [MelonLoader](https://github.com/LavaGang/MelonLoader/) and thus requires it to work
 
-Credit to KomiksPL for helping immensely with the Addressables and shop systems.
+Credit to Atmudia for helping immensely with the Addressables and shop systems.
