@@ -13,6 +13,8 @@ namespace AcceleratorThings
     [RegisterTypeInIl2Cpp]
     public class DoubleAccelerator : SRBehaviour
     {
+        public DoubleAccelerator(IntPtr ptr) : base(ptr) { }
+
         private Accelerator accelOne;
         private Accelerator accelTwo;
 

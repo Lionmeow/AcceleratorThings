@@ -8,6 +8,8 @@ namespace AcceleratorThings
     [RegisterTypeInIl2Cpp]
     public class PlayerAccelerator : SRBehaviour
     {
+        public PlayerAccelerator(IntPtr ptr) : base(ptr) { }
+
         public static SECTR_AudioCue launchedCue;
 
         public double timeBetweenLaunches = 1;

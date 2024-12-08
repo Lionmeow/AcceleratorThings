@@ -8,6 +8,8 @@ namespace AcceleratorThings
     [RegisterTypeInIl2Cpp]
     public class GenericVacuum : SRBehaviour
     {
+        public GenericVacuum(IntPtr ptr) : base(ptr) { }
+
         public GameObject destroyOnVacFX;
         public GameObject vacJointPrefab;
 

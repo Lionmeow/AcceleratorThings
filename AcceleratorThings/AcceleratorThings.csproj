@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,11 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UnlockAcceleratorsOnAcceleratorUnlock.cs" />
+    <Compile Remove="UnlockPatches.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="accelthings" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="accelthings" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="UnlockAcceleratorsOnAcceleratorUnlock.cs" />
+    <None Include="UnlockPatches.cs" />
   </ItemGroup>
 
   <ItemGroup>

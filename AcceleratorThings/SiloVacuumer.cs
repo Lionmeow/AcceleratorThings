@@ -7,6 +7,8 @@ namespace AcceleratorThings
     [RegisterTypeInIl2Cpp]
     public class SiloVacuumer : SRBehaviour
     {
+        public SiloVacuumer(IntPtr ptr) : base(ptr) { }
+
         private TrackCollisions tracker;
         private Collider collider;
 

@@ -8,6 +8,8 @@ namespace AcceleratorThings
     [RegisterTypeInIl2Cpp]
     public class FilterAccelerator : SRBehaviour
     {
+        public FilterAccelerator(IntPtr ptr) : base(ptr) { }
+
         private Accelerator accelOne;
         private Accelerator accelTwo;
 
