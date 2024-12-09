@@ -23,7 +23,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-[assembly: MelonInfo(typeof(EntryPoint), "Accelerator Things", "1.0", "Lionmeow")]
+[assembly: MelonInfo(typeof(EntryPoint), "Accelerator Things", "1.4", "Lionmeow")]
 
 namespace AcceleratorThings
 {
