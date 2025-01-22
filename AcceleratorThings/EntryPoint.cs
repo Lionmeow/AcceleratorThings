@@ -1,6 +1,7 @@
 ﻿using AcceleratorThings;
 using HarmonyLib;
 using Il2Cpp;
+using Il2CppInterop.Generator.Extensions;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppMonomiPark.SlimeRancher;
@@ -11,6 +12,8 @@ using Il2CppMonomiPark.SlimeRancher.Player.PlayerItems;
 using Il2CppMonomiPark.SlimeRancher.Regions;
 using Il2CppMonomiPark.SlimeRancher.Script.Util;
 using Il2CppMonomiPark.SlimeRancher.Shop;
+using Il2CppMonomiPark.SlimeRancher.UI;
+using Il2CppMonomiPark.SlimeRancher.Util;
 using Il2CppMonomiPark.SlimeRancher.World;
 using Il2CppSystem.Linq;
 using MelonLoader;
@@ -168,7 +171,7 @@ namespace AcceleratorThings
         }
 
         [HarmonyPatch(typeof(GameContext), "Start")]
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         public static void OnGameContext(GameContext __instance)
         {
             if (gcinitialized)
@@ -190,18 +193,20 @@ namespace AcceleratorThings
             });
             Addressables.AddResourceLocator(new ModdedResourceLocator().Cast<IResourceLocator>());
 
+            // add blueprints to shop
+
             acceleratorsRuleset = ScriptableObject.CreateInstance<ShopCategorySourceRuleSet>();
             acceleratorsRuleset.hideFlags = HideFlags.HideAndDontSave;
             acceleratorsRuleset.name = "RangeExchange_AcceleratorThingsRuleSet";
 
             Il2CppSystem.Collections.Generic.List<IGameQueryComponent> queryComponents = new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>();
-            queryComponents.Add(GadgetEventQueryComponent.CreateQueryComponent(new AssetReferenceT<GadgetEventProducer>("fb4d5e5097d315d4cbc6e8f6d7fd7a3a")
+            queryComponents.Add(GadgetEventQueryComponent.CreateQueryComponent(new AssetReferenceT<GadgetEventProducer>("fb4d5e5097d315d4cbc6e8f6d7fd7a3a") // GadgetBluePrintObtained
                 .LoadAsset<GadgetEventProducer>().WaitForCompletion(), SRLookup.Get<GadgetDefinition>("Accelerator"), 1).Cast<IGameQueryComponent>());
             acceleratorsRuleset._allItemsAvailableCondition = CompositeQueryComponent.CreateCompositeQueryComponent(CompositeQueryComponent.BoolOperation.ALL_OF,
             queryComponents.Cast<Il2CppSystem.Collections.Generic.IEnumerable<IGameQueryComponent>>());
 
             acceleratorsRuleset._assetGuid = "MODDED_AcceleratorThings/RuleSet";
-            acceleratorsRuleset._categoryLink = new AssetReferenceT<ShopItemCategoryDescription>("b99fdf9ac7d2f2d4c842bd747045ea73");
+            acceleratorsRuleset._categoryLink = new AssetReferenceT<ShopItemCategoryDescription>("b99fdf9ac7d2f2d4c842bd747045ea73"); // RangeExchange (fixed shop category)
             acceleratorsRuleset._countLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>();
             acceleratorsRuleset._randomItemRestockFrequency = ShopRandomRestockFrequency.NEVER_RESET;
             acceleratorsRuleset._sortIndex = 4;
@@ -217,10 +222,10 @@ namespace AcceleratorThings
                 {
                     ItemCost = new ShopItemCost()
                     {
-                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        PurchaseCost = new PurchaseCost()
                         {
                             componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
-                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
                             newbuckCost = 750
                         },
                         UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
@@ -237,10 +242,10 @@ namespace AcceleratorThings
                 {
                     ItemCost = new ShopItemCost()
                     {
-                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        PurchaseCost = new PurchaseCost()
                         {
                             componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
-                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
                             newbuckCost = 500
                         },
                         UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
@@ -257,10 +262,10 @@ namespace AcceleratorThings
                 {
                     ItemCost = new ShopItemCost()
                     {
-                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        PurchaseCost = new PurchaseCost()
                         {
                             componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
-                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
                             newbuckCost = 250
                         },
                         UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
@@ -277,10 +282,10 @@ namespace AcceleratorThings
                 {
                     ItemCost = new ShopItemCost()
                     {
-                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        PurchaseCost = new PurchaseCost()
                         {
                             componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
-                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
                             newbuckCost = 1000
                         },
                         UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
@@ -297,10 +302,10 @@ namespace AcceleratorThings
                 {
                     ItemCost = new ShopItemCost()
                     {
-                        PurchaseCost = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+                        PurchaseCost = new PurchaseCost()
                         {
                             componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
-                            identCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
                             newbuckCost = 500
                         },
                         UnlockType = ShopItemUnlockType.ITEM_BLUEPRINT,
@@ -314,76 +319,217 @@ namespace AcceleratorThings
                     AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
                 }
             };
-            acceleratorsTable.OnAfterDeserialize();
+            acceleratorsTable.OnAfterDeserialize(); // puts item entries into the used lists
 
             acceleratorsLink = ScriptableObject.CreateInstance<ShopCategorySourceLink>();
             acceleratorsLink.hideFlags = HideFlags.HideAndDontSave;
             acceleratorsLink.name = "RangeExchange_AcceleratorThingsSourceLink";
             acceleratorsLink._linkedSource = acceleratorsTable;
             acceleratorsLink._owningRuleSet = new AssetReferenceT<ShopCategorySourceRuleSet>("MODDED_AcceleratorThings/RuleSet");
-            acceleratorsLink.OwningRuleSet.LoadAsset();
+            acceleratorsLink.OwningRuleSet.LoadAsset(); // likely not needed, but it could help
             acceleratorsLink._sortIndex = 0;
 
             CustomAddressablesPatch.customAddressablePaths["MODDED_AcceleratorThings/SourceLink"] = acceleratorsLink;
 
-            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> vacCosts =
-                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
-            vacCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
-            vacCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
-            vacCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 15, identType = SRLookup.Get<IdentifiableType>("RadiantOreCraft") });
+            // add to random shop
 
-            vacceleratorDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            CompositeQueryComponent emptyQuery = CompositeQueryComponent.CreateCompositeQueryComponent(CompositeQueryComponent.BoolOperation.ALL_OF, 
+                new Il2CppSystem.Collections.Generic.List<IGameQueryComponent>().Cast<Il2CppSystem.Collections.Generic.IEnumerable<IGameQueryComponent>>());
+
+            ShopRandomItemsTable t3RandomTable = new AssetReferenceT<ShopRandomItemsTable>("6fa42cb350c10064eaaf82bb9d9d7bf0").LoadAsset().WaitForCompletion();
+            t3RandomTable.Items = t3RandomTable.Items.AddItem(new ShopRandomItemsTable.ItemRateEntry()
+            {
+                AvailableCondition = emptyQuery,
+                OccurenceWeight = 1,
+                UnlockType = ShopItemUnlockType.INDIVIDUAL_ITEM,
+                Item = new ShopItemAssetReference()
+                {
+                    _filterFlags = ShopItemFilterFlags.GADGET,
+                    _identifiableReferenceId = "GadgetDefinition.Upccelerator",
+                    _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Upccelerator")
+                },
+                Costs = new ShopRandomItemsTable.CostRateEntry[]
+                {
+                    new ShopRandomItemsTable.CostRateEntry()
+                    {
+                        AcquireLimit = new Optional<int>().WithValue(1),
+                        OccurenceWeight = 0,
+                        PurchaseCost = new PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
+                            newbuckCost = 50
+                        }
+                    }
+                }
+            }).ToArray();
+
+            ShopRandomItemsTable t4RandomTable = new AssetReferenceT<ShopRandomItemsTable>("4bc09a5512ed2c346ba6c23c60ecd027").LoadAsset().WaitForCompletion();
+            t4RandomTable.Items = t4RandomTable.Items.AddItem(new ShopRandomItemsTable.ItemRateEntry()
+            {
+                AvailableCondition = emptyQuery,
+                OccurenceWeight = 1,
+                UnlockType = ShopItemUnlockType.INDIVIDUAL_ITEM,
+                Item = new ShopItemAssetReference()
+                {
+                    _filterFlags = ShopItemFilterFlags.GADGET,
+                    _identifiableReferenceId = "GadgetDefinition.Triccelerator",
+                    _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Triccelerator")
+                },
+                Costs = new ShopRandomItemsTable.CostRateEntry[]
+                {
+                    new ShopRandomItemsTable.CostRateEntry()
+                    {
+                        AcquireLimit = new Optional<int>().WithValue(1),
+                        OccurenceWeight = 0,
+                        PurchaseCost = new PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
+                            newbuckCost = 100
+                        }
+                    }
+                }
+            }).AddItem(new ShopRandomItemsTable.ItemRateEntry()
+            {
+                AvailableCondition = emptyQuery,
+                OccurenceWeight = 1,
+                UnlockType = ShopItemUnlockType.INDIVIDUAL_ITEM,
+                Item = new ShopItemAssetReference()
+                {
+                    _filterFlags = ShopItemFilterFlags.GADGET,
+                    _identifiableReferenceId = "GadgetDefinition.Bigccelerator",
+                    _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Bigccelerator")
+                },
+                Costs = new ShopRandomItemsTable.CostRateEntry[]
+                {
+                    new ShopRandomItemsTable.CostRateEntry()
+                    {
+                        AcquireLimit = new Optional<int>().WithValue(1),
+                        OccurenceWeight = 0,
+                        PurchaseCost = new PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
+                            newbuckCost = 100
+                        }
+                    }
+                }
+            }).ToArray();
+
+            ShopRandomItemsTable t5RandomTable = new AssetReferenceT<ShopRandomItemsTable>("2ed966ba45a5dc84bb8f70eab16d1c89").LoadAsset().WaitForCompletion();
+            t5RandomTable.Items = t5RandomTable.Items.AddItem(new ShopRandomItemsTable.ItemRateEntry()
+            {
+                AvailableCondition = emptyQuery,
+                OccurenceWeight = 1,
+                UnlockType = ShopItemUnlockType.INDIVIDUAL_ITEM,
+                Item = new ShopItemAssetReference()
+                {
+                    _filterFlags = ShopItemFilterFlags.GADGET,
+                    _identifiableReferenceId = "GadgetDefinition.Vaccelerator",
+                    _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Vaccelerator")
+                },
+                Costs = new ShopRandomItemsTable.CostRateEntry[]
+                {
+                    new ShopRandomItemsTable.CostRateEntry()
+                    {
+                        AcquireLimit = new Optional<int>().WithValue(1),
+                        OccurenceWeight = 0,
+                        PurchaseCost = new PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
+                            newbuckCost = 200
+                        }
+                    }
+                }
+            }).AddItem(new ShopRandomItemsTable.ItemRateEntry()
+            {
+                AvailableCondition = emptyQuery,
+                OccurenceWeight = 1,
+                UnlockType = ShopItemUnlockType.INDIVIDUAL_ITEM,
+                Item = new ShopItemAssetReference()
+                {
+                    _filterFlags = ShopItemFilterFlags.GADGET,
+                    _identifiableReferenceId = "GadgetDefinition.Accelefilter",
+                    _assetReference = new AssetReferenceT<IdentifiableType>("MODDED_AcceleratorThings/Accelefilter")
+                },
+                Costs = new ShopRandomItemsTable.CostRateEntry[]
+                {
+                    new ShopRandomItemsTable.CostRateEntry()
+                    {
+                        AcquireLimit = new Optional<int>().WithValue(1),
+                        OccurenceWeight = 0,
+                        PurchaseCost = new PurchaseCost()
+                        {
+                            componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
+                            identCosts = new Il2CppSystem.Collections.Generic.List<IdentCostEntry>(),
+                            newbuckCost = 250
+                        }
+                    }
+                }
+            }).ToArray();
+
+            // more registry things that couldn't've been done pre-LookupDirector
+
+            Il2CppSystem.Collections.Generic.List<IdentCostEntry> vacCosts =
+                new Il2CppSystem.Collections.Generic.List<IdentCostEntry>();
+            vacCosts.Add(new IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            vacCosts.Add(new IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+            vacCosts.Add(new IdentCostEntry() { amount = 15, identType = SRLookup.Get<IdentifiableType>("RadiantOreCraft") });
+
+            vacceleratorDef.CraftingCosts = new PurchaseCost()
             {
                 componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
                 newbuckCost = 100,
                 identCosts = vacCosts
             };
 
-            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> triCosts =
-                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
-            triCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
-            triCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
-            triCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("LavaDustCraft") });
+            Il2CppSystem.Collections.Generic.List<IdentCostEntry> triCosts =
+                new Il2CppSystem.Collections.Generic.List<IdentCostEntry>();
+            triCosts.Add(new IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            triCosts.Add(new IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+            triCosts.Add(new IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("LavaDustCraft") });
 
-            triacceleratorDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            triacceleratorDef.CraftingCosts = new PurchaseCost()
             {
                 componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
                 newbuckCost = 100,
                 identCosts = triCosts
             };
 
-            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> upCosts =
-                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
-            upCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
-            upCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+            Il2CppSystem.Collections.Generic.List<IdentCostEntry> upCosts =
+                new Il2CppSystem.Collections.Generic.List<IdentCostEntry>();
+            upCosts.Add(new IdentCostEntry() { amount = 1, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            upCosts.Add(new IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
 
-            upcceleratorDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            upcceleratorDef.CraftingCosts = new PurchaseCost()
             {
                 componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
                 newbuckCost = 50,
                 identCosts = upCosts
             };
 
-            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> filterCosts =
-                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
-            filterCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
-            filterCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
-            filterCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("LavaDustCraft") });
-            filterCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 5, identType = SRLookup.Get<IdentifiableType>("RadiantOreCraft") });
+            Il2CppSystem.Collections.Generic.List<IdentCostEntry> filterCosts =
+                new Il2CppSystem.Collections.Generic.List<IdentCostEntry>();
+            filterCosts.Add(new IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            filterCosts.Add(new IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+            filterCosts.Add(new IdentCostEntry() { amount = 3, identType = SRLookup.Get<IdentifiableType>("LavaDustCraft") });
+            filterCosts.Add(new IdentCostEntry() { amount = 5, identType = SRLookup.Get<IdentifiableType>("RadiantOreCraft") });
 
-            accelefilterDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            accelefilterDef.CraftingCosts = new PurchaseCost()
             {
                 componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
                 newbuckCost = 200,
                 identCosts = filterCosts
             };
 
-            Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry> bigCosts =
-                new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry>();
-            bigCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
-            bigCosts.Add(new Il2CppMonomiPark.SlimeRancher.UI.IdentCostEntry() { amount = 4, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
+            Il2CppSystem.Collections.Generic.List<IdentCostEntry> bigCosts =
+                new Il2CppSystem.Collections.Generic.List<IdentCostEntry>();
+            bigCosts.Add(new IdentCostEntry() { amount = 2, identType = SRLookup.Get<IdentifiableType>("RingtailPlort") });
+            bigCosts.Add(new IdentCostEntry() { amount = 4, identType = SRLookup.Get<IdentifiableType>("DeepBrineCraft") });
 
-            bigcceleratorDef.CraftingCosts = new Il2CppMonomiPark.SlimeRancher.UI.PurchaseCost()
+            bigcceleratorDef.CraftingCosts = new PurchaseCost()
             {
                 componentCosts = new Il2CppSystem.Collections.Generic.List<Il2CppMonomiPark.SlimeRancher.Player.Component.UpgradeComponent>(),
                 newbuckCost = 100,
@@ -395,6 +541,8 @@ namespace AcceleratorThings
             accelefilterDef.icon = objs.First(x => x.name == "iconGadgetAccelefilter" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
             upcceleratorDef.icon = objs.First(x => x.name == "iconGadgetUpccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
             bigcceleratorDef.icon = objs.First(x => x.name == "iconGadgetBigccelerator" && x.GetIl2CppType() == Il2CppType.Of<Sprite>()).Cast<Sprite>();
+
+            // vaccelerator
 
             GameObject vaccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             vaccelerator.transform.localPosition = Vector3.zero;
@@ -445,15 +593,11 @@ namespace AcceleratorThings
             vac.vacOrigin = vaccer.transform.FindChild("vac point");
 
             vaccer.AddComponent<SiloActivator>();
-            vaccer.layer = 18;
+            vaccer.layer = 18; // VacCone (layer that allows interaction with silo activators)
             for (int i = 0; i < vaccer.transform.childCount; i++)
                 vaccer.transform.GetChild(i).gameObject.layer = 18;
 
-            //vaccer.GetComponentInChildren<CapsuleCollider>().transform.parent.gameObject.AddComponent<SiloActivator>();
-            //vaccer.GetComponentInChildren<CapsuleCollider>().gameObject.layer = 18;
-            //vaccer.GetComponentInChildren<CapsuleCollider>().gameObject.name = "c";
-            //vaccer.GetComponentInChildren<CapsuleCollider>().gameObject.AddComponent<SiloVacuumer>();
-            //vaccer.GetComponentInChildren<CapsuleCollider>().gameObject.AddComponent<TrackCollisions>();
+            // triaccelerator
 
             GameObject triaccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             triaccelerator.transform.localPosition = Vector3.zero;
@@ -500,6 +644,8 @@ namespace AcceleratorThings
             UnityEngine.Object.Destroy(trimodel.GetComponent<MeshRenderer>());
             UnityEngine.Object.Destroy(trimodel.transform.FindChild("model_acceleratorDecals").gameObject);
 
+            // upccelerator
+
             GameObject upccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             upccelerator.transform.localPosition = Vector3.zero;
             upccelerator.GetComponent<Gadget>().identType = upcceleratorDef;
@@ -532,6 +678,8 @@ namespace AcceleratorThings
             UnityEngine.Object.Destroy(upmodel.GetComponent<MeshFilter>());
             UnityEngine.Object.Destroy(upmodel.GetComponent<MeshRenderer>());
             UnityEngine.Object.Destroy(upmodel.transform.FindChild("model_acceleratorDecals").gameObject);
+
+            // accelefilter
 
             GameObject accelefilter = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             accelefilter.transform.localPosition = Vector3.zero;
@@ -592,6 +740,8 @@ namespace AcceleratorThings
             UnityEngine.Object.Destroy(decorItemDisplay.GetComponentInChildren<CapsuleCollider>());
             UnityEngine.Object.Destroy(filtermodel.transform.FindChild("model_acceleratorDecals").gameObject);
 
+            // bigccelerator
+
             GameObject bigccelerator = UnityEngine.Object.Instantiate(SRLookup.Get<GameObject>("gadgetAccelerator"), prefabParent);
             bigccelerator.transform.localPosition = Vector3.zero;
             bigccelerator.GetComponent<Gadget>().identType = bigcceleratorDef;
@@ -616,7 +766,7 @@ namespace AcceleratorThings
             bigccelTrigger.localPosition += new Vector3(0, 0.5f, 0);
             bigccelTrigger.localScale = new Vector3(2, 2, 2);
             Accelerator bigccelComponent = bigccelTrigger.GetComponent<Accelerator>();
-            bigccelComponent._acceleratableTypeGroup = SRLookup.Get<IdentifiableTypeGroup>("IdentifiableTypeGroups");
+            bigccelComponent._acceleratableTypeGroup = SRLookup.Get<IdentifiableTypeGroup>("IdentifiableTypesGroup");
             bigccelComponent._accelerationForce = new Vector3(0, 0, 50);
             PlayerAccelerator bigccelPlayer = bigccelTrigger.gameObject.AddComponent<PlayerAccelerator>();
             PlayerAccelerator.launchedCue = bigccelComponent._itemAcceleratedCue;
@@ -636,6 +786,7 @@ namespace AcceleratorThings
         public static void LoadResourceLocations(Il2CppSystem.Object key, Il2CppSystem.Type type, 
             ref AsyncOperationHandle<Il2CppSystem.Collections.Generic.IList<IResourceLocation>> __result)
         {
+            // adds the modded category to the list of categories to be loaded
             if (key != null && key.ToString().Contains("Group_ShopCategory"))
             {
                 Il2CppSystem.Collections.Generic.List<IResourceLocation> locations =

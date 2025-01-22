@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 using Type = Il2CppSystem.Type;
 using UnityEngine;
 using Il2Cpp;
+using MelonLoader;
 
 namespace AcceleratorThings
 {
@@ -34,6 +35,9 @@ namespace AcceleratorThings
                 cache[selected] = Resources.FindObjectsOfTypeAll<T>();
                 found = cache[selected].FirstOrDefault(x => x.name == name)?.Cast<T>();
             }
+
+            if (found == null)
+                MelonLogger.Msg($"Didn't find {name}!");
 
             return found;
         }

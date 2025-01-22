@@ -52,7 +52,7 @@ namespace AcceleratorThings
 
         public void ForceJoint(Vacuumable vacuumable)
         {
-            vacuumable.capture(CreateJoint(vacuumable));
+            vacuumable.Capture(CreateJoint(vacuumable));
         }
 
         public void ClearVac()
@@ -63,7 +63,7 @@ namespace AcceleratorThings
                 {
                     Vacuumable vacuumable = joint.connectedBody.GetComponent<Vacuumable>();
                     if (vacuumable)
-                        vacuumable.release();
+                        vacuumable.Release();
                 }
             }
         }
@@ -91,23 +91,23 @@ namespace AcceleratorThings
                         {
                             Rigidbody rb = vacItem.GetComponent<Rigidbody>();
 
-                            if (vacuumable.isCaptive() && vacuumable.IsTornadoed())
-                                vacuumable.release();
+                            if (vacuumable.IsCaptive() && vacuumable.IsTornadoed())
+                                vacuumable.Release();
 
-                            if (!vacuumable.isCaptive())
+                            if (!vacuumable.IsCaptive())
                             {
                                 if (rb.isKinematic)
                                     vacuumable.Pending = true;
                                 else
-                                    vacuumable.capture(CreateJoint(vacuumable));
+                                    vacuumable.Capture(CreateJoint(vacuumable));
                             }
                         }
                     }
                 }
 
-                if (vacuumable.isCaptive() && Vector3.Distance(vacOrigin.position, vacItem.transform.position) <= accelDist)
+                if (vacuumable.IsCaptive() && Vector3.Distance(vacOrigin.position, vacItem.transform.position) <= accelDist)
                 {
-                    vacuumable.release();
+                    vacuumable.Release();
                     accel.LaunchObject(vacuumable.GetComponent<Rigidbody>());
                 }
             }
