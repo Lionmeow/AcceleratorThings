@@ -26,7 +26,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-[assembly: MelonInfo(typeof(EntryPoint), "Accelerator Things", "1.4", "Lionmeow")]
+[assembly: MelonInfo(typeof(EntryPoint), "Accelerator Things", "1.5", "Lionmeow")]
 
 namespace AcceleratorThings
 {
@@ -207,7 +207,7 @@ namespace AcceleratorThings
 
             acceleratorsRuleset._assetGuid = "MODDED_AcceleratorThings/RuleSet";
             acceleratorsRuleset._categoryLink = new AssetReferenceT<ShopItemCategoryDescription>("b99fdf9ac7d2f2d4c842bd747045ea73"); // RangeExchange (fixed shop category)
-            acceleratorsRuleset._countLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>();
+            acceleratorsRuleset._countLimit = new Optional<int>();
             acceleratorsRuleset._randomItemRestockFrequency = ShopRandomRestockFrequency.NEVER_RESET;
             acceleratorsRuleset._sortIndex = 4;
 
@@ -236,7 +236,7 @@ namespace AcceleratorThings
                             _identifiableReferenceId = vacceleratorDef.ReferenceId
                         }
                     },
-                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                    AcquireLimit = new Optional<int>()
                 },
                 new ShopFixedItemsTable.ItemEntry()
                 {
@@ -256,7 +256,7 @@ namespace AcceleratorThings
                             _identifiableReferenceId = triacceleratorDef.ReferenceId
                         }
                     },
-                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                    AcquireLimit = new Optional<int>()
                 },
                 new ShopFixedItemsTable.ItemEntry()
                 {
@@ -276,7 +276,7 @@ namespace AcceleratorThings
                             _identifiableReferenceId = upcceleratorDef.ReferenceId
                         }
                     },
-                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                    AcquireLimit = new Optional<int>()
                 },
                 new ShopFixedItemsTable.ItemEntry()
                 {
@@ -296,7 +296,7 @@ namespace AcceleratorThings
                             _identifiableReferenceId = accelefilterDef.ReferenceId
                         }
                     },
-                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                    AcquireLimit = new Optional<int>()
                 },
                 new ShopFixedItemsTable.ItemEntry()
                 {
@@ -316,7 +316,7 @@ namespace AcceleratorThings
                             _identifiableReferenceId = bigcceleratorDef.ReferenceId
                         }
                     },
-                    AcquireLimit = new Il2CppMonomiPark.SlimeRancher.Util.Optional<int>()
+                    AcquireLimit = new Optional<int>()
                 }
             };
             acceleratorsTable.OnAfterDeserialize(); // puts item entries into the used lists
