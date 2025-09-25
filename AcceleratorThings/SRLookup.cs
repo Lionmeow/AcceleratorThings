@@ -62,7 +62,7 @@ namespace AcceleratorThings
             
             return obj;
         }
-        private static IdentifiableType[] privateIdentTypes;
+        /*private static IdentifiableType[] privateIdentTypes;
 
         public static IdentifiableType[] IdentifiableTypes
         {
@@ -74,7 +74,7 @@ namespace AcceleratorThings
 
                 return privateIdentTypes;
             }
-        }
+        }*/
 
      
     }

@@ -453,7 +453,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy &quot;D:\unity projects\bsep 2 electric boogaloo\Assets\AssetBundles\accelthings&quot; &quot;D:\vs projects\AcceleratorThings\AcceleratorThings&quot; /y" />
+    <Exec Command="xcopy &quot;D:\mistew obwama\projects\unity projects\bsep 2 electric boogaloo\Assets\AssetBundles\accelthings&quot; &quot;D:\mistew obwama\projects\vs projects\AcceleratorThings\AcceleratorThings&quot; /y" />
   </Target>
 
 </Project>

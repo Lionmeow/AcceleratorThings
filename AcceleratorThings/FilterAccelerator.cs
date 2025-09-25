@@ -26,7 +26,7 @@ namespace AcceleratorThings
 
         public void OnTriggerEnter(Collider other)
         {
-            if (other.attachedRigidbody == null || Vacuumable.TryGetVacuumable(other.gameObject, out _))
+            if (other.attachedRigidbody == null || !Vacuumable.TryGetVacuumable(other.gameObject, out _))
                 return;
             if (!accelOne.CanLaunchObject(other.gameObject))
                 return;

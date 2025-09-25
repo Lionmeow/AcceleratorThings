@@ -22,12 +22,16 @@ namespace AcceleratorThings
         public float maxSpringStrength = 50;
         public float accelDist = 2.8f;
 
+        public float launchDelayBeforeRevac = 0.1f;
+
         public int layerMask = -1677738245;
 
         private TrackCollisions tracker;
         private Accelerator accel;
 
         private List<Joint> joints = new List<Joint>();
+        private List<Vacuumable> recentLaunched = new List<Vacuumable>();
+        private List<float> launchRemovals = new List<float>();
 
         private void Start()
         {
@@ -46,6 +50,20 @@ namespace AcceleratorThings
             ConsumeExistingJointed();
             foreach (GameObject inVac in tracker.CurrColliders())
                 ConsumeVacItem(inVac);
+        }
+
+        public void FixedUpdate()
+        {
+            for (int i = 0; i < recentLaunched.Count;)
+            {
+                if (launchRemovals[i] <= Time.time)
+                {
+                    recentLaunched.RemoveAt(i);
+                    launchRemovals.RemoveAt(i);
+                    continue;
+                }
+                i++;
+            }
         }
 
         public void OnDestroy() => ClearVac();
@@ -75,6 +93,9 @@ namespace AcceleratorThings
 
             if (vacuumable && vacuumable.enabled)
             {
+                if (recentLaunched.Contains(vacuumable))
+                    return;
+
                 if (Physics.Raycast(vacOrigin.position, vacItem.transform.position - vacOrigin.position, out RaycastHit hitInfo, maxVacDist, layerMask))
                 {
                     if (hitInfo.rigidbody != null && hitInfo.rigidbody.gameObject == vacItem)
@@ -108,7 +129,11 @@ namespace AcceleratorThings
                 if (vacuumable.IsCaptive() && Vector3.Distance(vacOrigin.position, vacItem.transform.position) <= accelDist)
                 {
                     vacuumable.Release();
-                    accel.LaunchObject(vacuumable.GetComponent<Rigidbody>());
+
+                    recentLaunched.Add(vacuumable);
+                    launchRemovals.Add(Time.time + launchDelayBeforeRevac);
+
+                    accel.LaunchObject(vacuumable._body);
                 }
             }
         }

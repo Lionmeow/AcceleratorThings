@@ -29,13 +29,17 @@ namespace AcceleratorThings
 
         public void OnTriggerEnter(Collider other)
         {
-            if (other.attachedRigidbody == null || Vacuumable.TryGetVacuumable(other.gameObject, out _))
+            if (other.attachedRigidbody == null || !Vacuumable.TryGetVacuumable(other.gameObject, out _))
+                return;
+
+            if (accelOne._objectsToLaunch.Contains(other.attachedRigidbody) || accelTwo._objectsToLaunch.Contains(other.attachedRigidbody))
                 return;
 
             if (!(swapping ? accelTwo : accelOne).CanLaunchObject(other.gameObject))
                 return;
 
             (swapping ? accelTwo : accelOne).OnTriggerEnter(other);
+
             swapping = !swapping;
         }
     }
